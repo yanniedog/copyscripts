@@ -208,3 +208,4 @@ if __name__ == "__main__":
     output_content = generate_output(unique_files, log_content)
 
     write_output_file(output_path, output_content)
+
