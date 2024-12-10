@@ -134,7 +134,7 @@ def alert_duplicate_filenames(duplicate_files):
     print("Please resolve duplicate filenames to ensure each script is uniquely identified.\n")
 
 def generate_output(collected_files):
-    header = "I've listed all the scripts in this project below.\n\n==================================\n\n"
+    header = "I've listed all the scripts in this project below. Please provide a complete fix for the error shown. If any scripts need modification, provide me with the complete, untruncated, working revision, without any placeholders or missing code or example code or hypothetical code. Everything you provide must be fully working, error-free and production-ready.\n\n==================================\n\n"
     content = header
     for idx, (filename, path) in enumerate(collected_files, start=1):
         # Determine location
