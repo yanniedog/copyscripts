@@ -61,7 +61,7 @@ def backup_existing_gpt_files(current_dir, work_dir_name):
                 print(f"Error backing up '{item}': {e}")
                 continue
 
-def collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map):
+def collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map, always_excluded_subdirs):
     filename_map = defaultdict(list)
 
     for base_dir in base_dirs:
@@ -69,9 +69,10 @@ def collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map
             print(f"Warning: The directory '{base_dir}' does not exist and will be skipped.")
             continue
 
-        exclude_subdirs = exclude_subdirs_map.get(base_dir, [])
+        exclude_subdirs = exclude_subdirs_map.get(base_dir, []) + always_excluded_subdirs
 
         for root, dirs, files in os.walk(base_dir):
+            # Exclude specified subdirectories and always excluded ones
             dirs[:] = [d for d in dirs if d not in exclude_subdirs and not d.startswith('.')]
 
             for file in files:
@@ -174,9 +175,12 @@ if __name__ == "__main__":
         additional_ext = [ext.lower() if ext.startswith('.') else f".{ext.lower()}" for ext in args.extensions]
         extensions.extend(additional_ext)
 
+    # By default, only include current_dir and scripts_dir
     base_dirs = [current_dir, scripts_dir]
+    # Remove duplicates while preserving order
     base_dirs = list(dict.fromkeys(base_dirs))
 
+    # Include additional directories only if specified by the user
     if args.folders:
         for folder in args.folders:
             additional_dir = os.path.join(current_dir, folder)
@@ -187,7 +191,10 @@ if __name__ == "__main__":
         current_dir: ['scripts']
     }
 
-    filename_map = collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map)
+    # Define always excluded subdirectories
+    always_excluded_subdirs = ['venv', '.venv']
+
+    filename_map = collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map, always_excluded_subdirs)
 
     duplicate_filenames = {fname: paths for fname, paths in filename_map.items() if len(paths) > 1}
 
