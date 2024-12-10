@@ -79,7 +79,7 @@ def collect_files(base_dirs, extensions, excluded_filenames, exclude_subdirs_map
                     continue
                 if file.lower() in excluded_filenames:
                     continue
-                if any(file.lower().endswith(ext.lower()) for ext in extensions):
+                if any(file.lower().endswith(ext.lower()) for ext in extensions) or file.lower() == 'requirements.txt':
                     full_path = os.path.join(root, file)
                     filename_map[file.lower()].append(full_path)
 
@@ -208,4 +208,3 @@ if __name__ == "__main__":
     output_content = generate_output(unique_files, log_content)
 
     write_output_file(output_path, output_content)
-
